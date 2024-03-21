@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  cockroach:
+    image: cockroachdb/cockroach:v23.1.14
+    ports:
+      - "26257:26257"
+      - "8026:8080"
+    command: start-single-node --insecure
+    environment:
+      COCKROACH_DATABASE: heavy_stack
+      COCKROACH_USER: heavy
+    profiles:
+      - migration-test
+  postgres:
+    build:
+      dockerfile: dockerfiles/vector_pg.Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+  postgres_test:
+    build:
+      dockerfile: dockerfiles/vector_pg.Dockerfile
+    ports:
+      - "5555:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    tmpfs:
+      - /var/lib/postgresql/data

@@ -1,0 +1,18 @@
+:root {
+    --small-font: max(14px, 2vh);
+    --medium-font: max(28px, 4vh);
+    --large-font: max(48px, 7vh);
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic3-Regular.otf') format('otf');
+}
+
+input,
+textarea,
+button,
+a,
+body {
+    font-family: 'OpenDyslexic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

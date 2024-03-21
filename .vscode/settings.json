@@ -1,0 +1,74 @@
+{
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "",
+            "depth": 10,
+            "includeAllSymbols": true
+        }
+    ],
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.analysis.gotoDefinitionInStringLiteral": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "postgres",
+            "database": "heavy_stack",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5555,
+            "driver": "PostgreSQL",
+            "name": "test",
+            "database": "heavy_stack_test",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "vector",
+            "database": "heavy_stack_vector",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 26257,
+            "driver": "CockroachDB",
+            "name": "localhost",
+            "database": "heavy_stack",
+            "username": "heavy",
+            "password": ""
+        }
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "mypy.targets": [
+        "heavy_stack",
+        "tests",
+        "brython"
+    ],
+    "sqltools.autoOpenSessionFiles": false,
+    "sqltools.results.reuseTabs": "connection",
+}
