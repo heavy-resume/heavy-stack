@@ -8,6 +8,7 @@ The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork 
 - PostgreSQL, PG Vector, CockroachDB
 - SQL Model (SQLAlchemy + Pydantic)
 - Hot reloading, both server and tests
+- Action recording and load testing
 - Time tracking
 - Established patterns and examples
 
@@ -103,6 +104,14 @@ in order for changes to the `.env` file to take effect.
 - Prune old migrations:
   - See https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
   - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern.
+
+
+## Time Tracking
+The heavy stack dev container comes with ptyme-track already installed. This does time tracking for you by detecting file changes.
+
+The tracking is done in the background in a file that's ignored by git. To get it recorded you need to cement it in a file with your username (so you properly get credit). Please see https://github.com/JamesHutchison/ptyme-track?tab=readme-ov-file#cementing-work for more information. You would then git commit this file.
+
+If Taco Bell suddenly hits you, and you need to step away, it'll stop tracking time after 5 minutes of inactivity. It also does padding around start / stop times, and is explained in the repo's readme.
 
 
 ## Load Testing
