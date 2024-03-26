@@ -71,4 +71,7 @@
     ],
     "sqltools.autoOpenSessionFiles": false,
     "sqltools.results.reuseTabs": "connection",
+    "python.analysis.ignore": [
+        "custom_reactpy/**/*"
+    ],
 }
