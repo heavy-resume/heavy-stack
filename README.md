@@ -1,5 +1,5 @@
 # The Heavy Stack
-The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork of the tech stack and syncing between Heavy Resume and this fork will be done periodically.
+The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork of the tech stack and syncing between Heavy Resume and this fork will be done periodically. This is intended to be treated like a starting template.
 
 ## Features
 - Pre-made dev container, docker files
@@ -9,6 +9,13 @@ The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork 
 - Hot reloading, both server and tests
 - Time tracking
 - Established patterns and examples
+
+## Renaming the project
+After checking out the repo, you should rename the project. Run `python rename_project.py` and follow the prompts.
+
+Note that this isn't well tested at the moment and may be incomplete. Remember to delete the `.git` directory if things look good.
+
+If using github codespaces, you may not see the workspace directory rename until after you create a fresh codespace.
 
 ## Prescribed Running Method
 - The Heavy Stack was built with Github Codespaces or similar in mind. Running locally using docker can create complications such as poor performance, failure to detect changes, or I/O failures if the container is misconfigured or Docker has become unstable.
