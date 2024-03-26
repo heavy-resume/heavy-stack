@@ -74,7 +74,7 @@ If using github codespaces, you may not see the workspace directory rename until
 - Open the VS Code Tasks menu, select `Tasks: Run Task`, then select `load test heavy-stack`
 - Open the browser window at `localhost:8089` and configure the max users and step amount. You do not need to populate the host.
 
-## Notes
+### Load Testing Notes
 - This is very new and immature. It was made for testing locally and was not made for CI testing, so just keep that in mind when it applying to other use cases. It should be 100% capable of doing CI and production load testing, it just may require some code changes to get there.
 - Keep in mind that when you have a browser window open, it will attempt to reconnect. It is recommended you start with no browser
   windows open.
