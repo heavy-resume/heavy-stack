@@ -1,0 +1,58 @@
+[tool.ruff]
+# hard limit, error here
+line-length = 120
+
+[tool.black]
+# soft limit, wrap just before 100 chars
+line-length = 98
+
+[tool.poetry]
+name = "heavy-stack"
+version = "0.1.0"
+description = "The Heavy Stack used by Heavy Resume"
+authors = ["Heavy Resume"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sanic = { extras = ["ext"], version = "^23.6.0" }
+reactpy = { extras = ["sanic"], version = "^1.0.2" }
+reactpy-router = "^0.1.1"
+cryptography = "^41.0.4"
+redis = "^5.0.1"
+sqlmodel = "^0.0.12"
+asyncpg = "^0.29.0"
+megamock = "^0.1.0b9"
+# for https://github.com/sanic-org/tracerite/issues/9
+setuptools = "^69.0.2"
+python-ulid = "^2.2.0"
+pgvector = "^0.2.4"
+psycopg2-binary = "^2.9.9"
+alembic = "^1.13.1"
+sqlalchemy-cockroachdb = "^2.0.2"
+pyotp = "^2.9.0"
+orjson = "^3.9.15"
+more-itertools = "^10.2.0"
+types-pytz = "^2024.1.0.20240203"
+httpx = "^0.27.0"
+types-cachetools = "^5.3.0.7"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.9.0"
+ruff = "^0.3.3"
+black = "^24.3.0"
+pytest = "^8.1.1"
+pytest-asyncio = "^0.21.1"
+py-spy = "^0.3.14"
+pytest-hot-reloading = "^0.1.0a15"
+locust-plugins = { extras = ["websocket"], version = "^4.4.2" }
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning:pkg_resources.*",
+    "ignore::DeprecationWarning:websockets.connection.*",
+    "ignore::DeprecationWarning:tracerite.*",
+]
+addopts = "-p pytest_asyncio.plugin -p megamock.plugins.pytest -p pytest_hot_reloading.plugin"
+markers = ["uses_openai_api: mark a test as using the OpenAI API."]

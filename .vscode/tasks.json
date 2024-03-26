@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Redis",
+            "type": "shell",
+            "command": "docker-compose up -d redis",
+            "problemMatcher": []
+        },
+        {
+            "label": "Profile tests",
+            "type": "shell",
+            "command": "bash -c 'set -a; source /workspaces/heavy-stack/.env; set +a; poetry run py-spy record -o profile.svg -- pytest tests'",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Profile Server",
+            "type": "shell",
+            "command": "bash -c 'set -a; source /workspaces/heavy-stack/.env; set +a; poetry run py-spy record -o server.svg --subprocesses -- sanic heavy_stack.main.app -- --no-access-logs --workers=1'",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Load test heavy-stack",
+            "type": "shell",
+            "command": "poetry run locust -f tests/load_testing/data_recorder_locust.py",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Create new table boilerplate",
+            "type": "shell",
+            "command": "poetry run python ./dev_scripts/add_table.py",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Build Heavy Stack docker image",
+            "type": "shell",
+            "command": "docker build -f dockerfiles/heavy_stack.Dockerfile .",
+            "problemMatcher": [],
+        }
+    ]
+}

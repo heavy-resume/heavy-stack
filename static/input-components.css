@@ -1,0 +1,43 @@
+.line-input {
+    padding: 10px 15px;
+    border: 1px solid #aaa;
+    border-radius: 25px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    text-align: center;
+    width: 90%;
+}
+
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--button-color);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+    font-weight: bold;
+    color: var(--text-color);
+    border: 1px outset #ccc;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.button:disabled {
+    background-color: var(--button-disabled-color);
+    cursor: not-allowed;
+}
+
+.button:disabled:hover {
+    background-color: var(--button-disabled-color);
+}
+
+.button.link {
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: var(--button-hover-color);
+}
