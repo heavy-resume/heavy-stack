@@ -102,7 +102,7 @@ in order for changes to the `.env` file to take effect.
   - Simply delete the file
 - Prune old migrations:
   - See https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
-  - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern. If you really need to start fresh you
+  - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern.
 
 
 ## Load Testing
