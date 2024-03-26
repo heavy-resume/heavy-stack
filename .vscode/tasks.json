@@ -32,7 +32,7 @@
             "problemMatcher": [],
         },
         {
-            "label": "Build heavy stack docker image",
+            "label": "Build Heavy Stack docker image",
             "type": "shell",
             "command": "docker build -f dockerfiles/heavy_stack.Dockerfile .",
             "problemMatcher": [],
