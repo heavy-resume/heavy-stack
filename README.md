@@ -63,10 +63,11 @@ The project is structured as follows:
 
 
 ## Class responsibilities
-- `SQL Models` - These are used for database access and are the "raw" data. Encryption operations are handled by the model via methods that take a data key.
+- `SQL Models` - These are used for database access and are the "raw" data. If you have encrypted values, this class is what would handle the encryption / decryption.
 - `Shared Models` - These are domain objects and typically used by the frontend (ReactPy).
     There is no requirement that shared models match the SQL Model, but they often are close.
     The shared models should structure data like you would intuitively expect, and not just mirror the database schema.
+    Shared models probably shouldn't do any encryption or decryption, and are typically just Pydantic objects.
 - `Model Mungers` - These are used to take the output of an operation (usually a SQL Model) and convert it to the appropriate output model.
 - `Model Managers` - These handle the business logic around a model. They usually take in at least one munger as an argument.
 - `Repositories` - These handle the database operations and work with SQL Models. Managers frequently have at least one repository.
@@ -74,6 +75,28 @@ The project is structured as follows:
 ### Add Table Script
 - `dev_scripts/add_table.py` - Walks you through adding a new table, creating the SQL Model, Shared Model, Model Munger, Model Manager, and Repository.
 - This script is not required and some database tables or domain objects may not fit into this paradigm. That said, you can always delete what isn't used.
+- Using the script helps continue existing naming conventions.
+
+### Managing Database Connections
+- This shouldn't be needed for typical use cases. Repository classes should be the classes that access the
+  database, and the `SQLRepositoryBase` class will grab the current database connection, which is stored
+  in a thread local. If you need a second connection (for example, to connect to the vector database),
+  you can look in `db_connection.py` to see how its done.
+- If you're getting an error about the `db_session` variable not being set, then it means you're probably attempting
+  to do database access in the wrong place. Logic called inside an async function from `heavy_use_effect` or `heavy_event`
+  should set the `db_session` variable. Tests will also have the variable set automatically if you use the `db_session: AsyncSession` fixture.
+
+Test Example:
+```python
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+...
+
+class TestAClass:
+    class TestAMethod:
+        async def test_something(self, db_session: AsyncSession) -> None:
+          ...
+```
 
 
 ## Adding and updating dependencies
@@ -101,6 +124,121 @@ in order for changes to the `.env` file to take effect.
 - Prune old migrations:
   - See https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
   - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern.
+
+
+## Executing Frontend Code via Brython
+- Brython is a Python interpreter that runs in the browser. It is used to execute Python code in the browser.
+- Brython code is found in the `brython` directory. When you want to execute code on the client, you import the
+  the Brython module on the server. This means that imports to `browser` inside a Byrthon module
+  need to be inside a `try/catch` because they are also executed on the server.
+- Brython code is executed in ReactPy like this:
+
+Example (server):
+```python
+from heavy_stack_brython.navigate import open_new_tab
+
+
+from heavy_stack.frontend.brython_executors import BrythonExecutorContext
+from heavy_stack.frontend.reactpy_util import heavy_use_effect
+from heavy_stack.frontend.types import Component
+
+@component
+def MyComponent() -> Component:
+  brython_executor = use_context(BrythonExecutorContext)
+
+  def my_effect_func():
+    brython_executor.call(open_new_tab, url=to)
+
+  heavy_use_effect(my_effect_func, [])
+
+  ...
+```
+
+From the Brython side:
+```python
+from reactpy_bridge import called_from_reactpy
+
+try:
+    from browser import window  # type: ignore
+except ImportError:
+    pass
+
+
+@called_from_reactpy
+def navigate_to(url: str):
+    window.location.href = url
+
+
+@called_from_reactpy
+def open_new_tab(url: str):
+    window.open(url, "_blank")
+```
+
+You can also retrieve data from the client by providing a callback function that takes the return value.
+Remember to keep in the mind that the client could manipulate the result.
+
+Example:
+```python
+brython_executor.call(
+    get_timezone_name_and_offset,
+    lambda v: assign_user_timezone(*(json.loads(v[:200]))),
+)
+```
+
+### Brython Limitations:
+- Changes to Brython code will not take effect until the user refreshes the page.
+- Brython code can't be debugged via the browser, you'll need to use `print` statements and look at the console.
+- For this reason, its recommended that Brython logic is kept light and simple.
+- All arguments passed to the Brython function must be keyword arguments.
+
+
+### Suggestion
+When working with the DOM, have ChatGPT write Brython code for you. It knows how!
+
+
+## Custom Component Type
+The Heavy Stack uses `from heavy_stack.frontend.types import Component` as the return type for component objects.
+This is because the current typing of ReactPy results in erroenous type checking errors since there are many types
+that are valid. Likewise, it's a common pattern to build a list of children objects in a component. This would
+be used there as well.
+
+Example:
+```python
+from reactpy import component, html
+
+from heavy_stack.frontend.types import Component
+
+
+@component
+def MyComponent() -> Component:
+    children: list[Component] = []
+
+    if something:
+        children.append(SomeComponent())
+    if something_else:
+        children.append(html.p("Hello"))
+
+    return html.div(*children)
+```
+
+
+## Custom Classes for SQLModel
+To avoid accidentally creating a table but forgetting to tell `SQLModel` it is a table, use `HeavyModel` as the base class for tables.
+If you use the `dev_scripts/add_table.py` script, `HeavyModel` will already be the base class.
+
+
+## Wrapped Logic Around ReactPy
+The heavy stack has logic wrappers around `use_effect`, `event`, and `use_context`.
+They are `heavy_use_effect`, `heavy_event`, and `heavy_use_context` respectively.
+
+These provide opportunities to inject additional context, specifically a new database connection. You can
+modify the logic to provide your own values for your project in `heavy_wrapper_common`. For example,
+Heavy Resume uses `heavy_wrapper_common` to add more user information and classes that manage decryption
+for the user to the `HeavyContext` object. Heavy Resume also uses a caching layer here to reduce database calls.
+This is recommended but you will need to come up with your own implementation.
+
+Note that `async` functions will get a `HeavyContext` object passed in. Regular functions will not. All database
+calls need to be done within an `async` function.
 
 
 ## Time Tracking
@@ -152,10 +290,12 @@ If Taco Bell suddenly hits you, and you need to step away, it'll stop tracking t
 
 
 ## Custom ReactPy
-This is currently using a custom version of ReactPy found here: https://github.com/JamesHutchison/reactpy
+This is currently using a custom version of ReactPy found here: https://github.com/JamesHutchison/reactpy/tree/hot-reloading
 
 It has features that are in this draft PR on the original repo:
 https://github.com/reactive-python/reactpy/pull/1204
+
+It also has additional hot reloading features that were kept out of that PR.
 
 When the codespace is created, a clone of the repo is made in `/workspaces/reactpy`
 
@@ -164,3 +304,16 @@ When the codespace starts, a copy of the files necessary for building production
 When you run Heavy Resume in the codespace, it actually uses softlinks to `/workspaces/reactpy`. The `custom_reactpy` directory is only needed for testing docker builds of the production image. This is because docker does not support softlinks that point to directories outside of the build context.
 
 It is important to note that whatever version of ReactPy is installed, IS NOT USED AT THIS TIME.
+
+
+## External Links
+ - [ReactPy](https://github.com/reactive-python/reactpy)
+ - [ReactPy GPT](https://chat.openai.com/g/g-OXia9CHNG-reactpy-gpt)
+ - [Sanic](https://github.com/sanic-org/sanic)
+ - [SQLModel](https://github.com/tiangolo/sqlmodel)
+   - [Pydantic](https://github.com/pydantic/pydantic)
+   - [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy)
+   - [Alembic](https://github.com/alembic/alembic)
+ - [MegaMock](https://github.com/JamesHutchison/megamock)
+ - [PyTest Hot Reloading](https://github.com/JamesHutchison/pytest-hot-reloading)
+ - [Heavy Resume Discord](https://discord.gg/f8AsGpUjKM)
