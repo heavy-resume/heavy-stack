@@ -223,8 +223,9 @@ def MyComponent() -> Component:
 
 
 ## Custom Classes for SQLModel
-To avoid accidentally creating a table but forgetting to tell `SQLModel` it is a table, use `HeavyModel` as the base class for tables.
-If you use the `dev_scripts/add_table.py` script, `HeavyModel` will already be the base class.
+To avoid creating a table class but accidentally forgetting to tell `SQLModel` it is a table, use `HeavyModel` as the base class for tables.
+If you use the `dev_scripts/add_table.py` script, `HeavyModel` will already be the base class. This will save you your hair when you can't
+figure out why your table isn't getting generated, and you have `Table=True` instead of `table=True` in the code.
 
 
 ## Wrapped Logic Around ReactPy
