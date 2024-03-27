@@ -109,22 +109,32 @@ in order for changes to the `.env` file to take effect.
   - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern.
 
 
-## Executing Frontend Code Via Brython
+## Executing Frontend Code via Brython
 - Brython is a Python interpreter that runs in the browser. It is used to execute Python code in the browser.
 - Brython code is found in the `brython` directory. When you want to execute code on the client, you import the
   the Brython module on the server. This means that imports to `browser` inside a Byrthon module
   need to be inside a `try/catch` because they are also executed on the server.
 - Brython code is executed in ReactPy like this:
 
-Example:
+Example (server):
 ```python
 from heavy_stack_brython.navigate import open_new_tab
 
+
 from heavy_stack.frontend.brython_executors import BrythonExecutorContext
+from heavy_stack.frontend.reactpy_util import heavy_use_effect
+from heavy_stack.frontend.types import Component
 
-brython_executor = use_context(BrythonExecutorContext)
+@component
+def MyComponent() -> Component:
+  brython_executor = use_context(BrythonExecutorContext)
 
-brython_executor.call(open_new_tab, url=to)
+  def my_effect_func():
+    brython_executor.call(open_new_tab, url=to)
+
+  heavy_use_effect(my_effect_func, [])
+
+  ...
 ```
 
 From the Brython side:
@@ -167,6 +177,32 @@ brython_executor.call(
 
 ### Suggestion
 When working with the DOM, have ChatGPT write Brython code for you. It knows how!
+
+
+## Custom Component Type
+The Heavy Stack uses `from heavy_stack.frontend.types import Component` as the return type for component objects.
+This is because the current typing of ReactPy results in erroenous type checking errors since there are many types
+that are valid. Likewise, it's a common pattern to build a list of children objects in a component. This would
+be used there as well.
+
+Example:
+```python
+from reactpy import component, html
+
+from heavy_stack.frontend.types import Component
+
+
+@component
+def MyComponent() -> Component:
+    children: list[Component] = []
+
+    if something:
+        children.append(SomeComponent())
+    if something_else:
+        children.append(html.p("Hello"))
+
+    return html.div(*children)
+```
 
 
 ## Custom Classes for SQLModel
