@@ -261,7 +261,8 @@ If Taco Bell suddenly hits you, and you need to step away, it'll stop tracking t
 - Go to "Run and Debug", select "Data Record Heavy Stack"
 - Open your page and start doing the user actions you want to loop
 - When you are done, go back to the terminal and press Ctrl+C to stop the recording
-- Move your recording where you feel it is appropriate. The locust file is under `tests/load_testing/data_recorder_locust.py`
+- Move your recording to where you feel it is appropriate. The locust file is under `tests/load_testing/data_recorder_locust.py`.
+  - A demo file is in the same directory.
 
 ### Step 2
 - Go to "Run and Debug", select "Run Heavy Stack", and under the `Run` menu select `Run without debugging`
