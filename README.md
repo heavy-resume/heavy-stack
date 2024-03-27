@@ -188,7 +188,7 @@ brython_executor.call(
 ### Brython Limitations:
 - Changes to Brython code will not take effect until the user refreshes the page.
 - Brython code can't be debugged via the browser, you'll need to use `print` statements and look at the console.
-- For this reason, its recommended that Brython logic is kept light and simple.
+  - For this reason, its recommended that Brython logic is kept light and simple.
 - All arguments passed to the Brython function must be keyword arguments.
 
 
