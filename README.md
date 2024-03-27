@@ -290,10 +290,12 @@ If Taco Bell suddenly hits you, and you need to step away, it'll stop tracking t
 
 
 ## Custom ReactPy
-This is currently using a custom version of ReactPy found here: https://github.com/JamesHutchison/reactpy
+This is currently using a custom version of ReactPy found here: https://github.com/JamesHutchison/reactpy/tree/hot-reloading
 
 It has features that are in this draft PR on the original repo:
 https://github.com/reactive-python/reactpy/pull/1204
+
+It also has additional hot reloading features that were kept out of that PR.
 
 When the codespace is created, a clone of the repo is made in `/workspaces/reactpy`
 
