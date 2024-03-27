@@ -137,10 +137,10 @@ Example (server):
 ```python
 from heavy_stack_brython.navigate import open_new_tab
 
-
 from heavy_stack.frontend.brython_executors import BrythonExecutorContext
 from heavy_stack.frontend.reactpy_util import heavy_use_effect
 from heavy_stack.frontend.types import Component
+
 
 @component
 def MyComponent() -> Component:
