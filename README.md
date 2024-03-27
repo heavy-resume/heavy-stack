@@ -74,6 +74,12 @@ The project is structured as follows:
 ### Add Table Script
 - `dev_scripts/add_table.py` - Walks you through adding a new table, creating the SQL Model, Shared Model, Model Munger, Model Manager, and Repository.
 - This script is not required and some database tables or domain objects may not fit into this paradigm. That said, you can always delete what isn't used.
+- Using the script helps continue existing naming conventions.
+
+### Managing Database Connections
+- This shouldn't be needed for typical use cases. Repository classes should be the classes that access the database, and the `SQLRepositoryBase` class will
+  grab the current database connection. If you need a second connection (for example, to connect to the vector database), just take a look at how
+  things are done there.
 
 
 ## Adding and updating dependencies
@@ -101,6 +107,85 @@ in order for changes to the `.env` file to take effect.
 - Prune old migrations:
   - See https://alembic.sqlalchemy.org/en/latest/cookbook.html#building-an-up-to-date-database-from-scratch
   - TLDR: You just delete the old files and modify the oldest migration to not have a previous revision. Recreating a database from scratch via migrations is an antipattern.
+
+
+## Executing Frontend Code Via Brython
+- Brython is a Python interpreter that runs in the browser. It is used to execute Python code in the browser.
+- Brython code is found in the `brython` directory. When you want to execute code on the client, you import the
+  the Brython module on the server. This means that imports to `browser` inside a Byrthon module
+  need to be inside a `try/catch` because they are also executed on the server.
+- Brython code is executed in ReactPy like this:
+
+Example:
+```python
+from heavy_stack_brython.navigate import open_new_tab
+
+from heavy_stack.frontend.brython_executors import BrythonExecutorContext
+
+brython_executor = use_context(BrythonExecutorContext)
+
+brython_executor.call(open_new_tab, url=to)
+```
+
+From the Brython side:
+```python
+from reactpy_bridge import called_from_reactpy
+
+try:
+    from browser import window  # type: ignore
+except ImportError:
+    pass
+
+
+@called_from_reactpy
+def navigate_to(url: str):
+    window.location.href = url
+
+
+@called_from_reactpy
+def open_new_tab(url: str):
+    window.open(url, "_blank")
+```
+
+You can also retrieve data from the client by providing a callback function that takes the return value.
+Remember to keep in the mind that the client could manipulate the result.
+
+Example:
+```python
+brython_executor.call(
+    get_timezone_name_and_offset,
+    lambda v: assign_user_timezone(*(json.loads(v[:200]))),
+)
+```
+
+### Brython Limitations:
+- Changes to Brython code will not take effect until the user refreshes the page.
+- Brython code can't be debugged via the browser, you'll need to use `print` statements and look at the console.
+- For this reason, its recommended that Brython logic is kept light and simple.
+- All arguments passed to the Brython function must be keyword arguments.
+
+
+### Suggestion
+When working with the DOM, have ChatGPT write Brython code for you. It knows how!
+
+
+## Custom Classes for SQLModel
+To avoid accidentally creating a table but forgetting to tell `SQLModel` it is a table, use `HeavyModel` as the base class for tables.
+If you use the `dev_scripts/add_table.py` script, `HeavyModel` will already be the base class.
+
+
+## Wrapped Logic Around ReactPy
+The heavy stack has logic wrappers around `use_effect`, `event`, and `use_context`.
+They are `heavy_use_effect`, `heavy_event`, and `heavy_use_context` respectively.
+
+These provide opportunities to inject additional context, specifically a new database connection. You can
+modify the logic to provide your own values for your project in `heavy_wrapper_common`. For example,
+Heavy Resume uses `heavy_wrapper_common` to add more user information and classes that manage decryption
+for the user to the `HeavyContext` object. Heavy Resume also uses a caching layer here to reduce database calls.
+This is recommended but you will need to come up with your own implementation.
+
+Note that `async` functions will get a `HeavyContext` object passed in. Regular functions will not. All database
+calls need to be done within an `async` function.
 
 
 ## Time Tracking
