@@ -274,7 +274,7 @@ If Taco Bell suddenly hits you, and you need to step away, it'll stop tracking t
   - `timestamp`
   - `payload`
 - Simply copy the `connection_id` and update `connection_id` attribute in the `data_recorder_locust.py` file with the value.
-  You know you got the right one bcause it should be duplicated a lot.
+  You know you got the right one because it should be duplicated a lot.
 
 ### Step 4
 - Open the VS Code Tasks menu, select `Tasks: Run Task`, then select `load test heavy-stack`
