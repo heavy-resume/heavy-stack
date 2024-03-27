@@ -302,3 +302,16 @@ When the codespace starts, a copy of the files necessary for building production
 When you run Heavy Resume in the codespace, it actually uses softlinks to `/workspaces/reactpy`. The `custom_reactpy` directory is only needed for testing docker builds of the production image. This is because docker does not support softlinks that point to directories outside of the build context.
 
 It is important to note that whatever version of ReactPy is installed, IS NOT USED AT THIS TIME.
+
+
+## External Links
+ - [ReactPy](https://github.com/reactive-python/reactpy)
+ - [ReactPy GPT](https://chat.openai.com/g/g-OXia9CHNG-reactpy-gpt)
+ - [Sanic](https://github.com/sanic-org/sanic)
+ - [SQLModel](https://github.com/tiangolo/sqlmodel)
+   - [Pydantic](https://github.com/pydantic/pydantic)
+   - [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy)
+   - [Alembic](https://github.com/alembic/alembic)
+ - [MegaMock](https://github.com/JamesHutchison/megamock)
+ - [PyTest Hot Reloading](https://github.com/JamesHutchison/pytest-hot-reloading)
+ - [Heavy Resume Discord](https://discord.gg/f8AsGpUjKM)
