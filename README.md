@@ -63,10 +63,11 @@ The project is structured as follows:
 
 
 ## Class responsibilities
-- `SQL Models` - These are used for database access and are the "raw" data. Encryption operations are handled by the model via methods that take a data key.
+- `SQL Models` - These are used for database access and are the "raw" data. If you have encrypted values, this class is what would handle the encryption / decryption.
 - `Shared Models` - These are domain objects and typically used by the frontend (ReactPy).
     There is no requirement that shared models match the SQL Model, but they often are close.
     The shared models should structure data like you would intuitively expect, and not just mirror the database schema.
+    Shared models probably shouldn't do any encryption or decryption, and are typically just Pydantic objects.
 - `Model Mungers` - These are used to take the output of an operation (usually a SQL Model) and convert it to the appropriate output model.
 - `Model Managers` - These handle the business logic around a model. They usually take in at least one munger as an argument.
 - `Repositories` - These handle the database operations and work with SQL Models. Managers frequently have at least one repository.
