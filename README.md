@@ -28,6 +28,8 @@ If using github codespaces, you may not see the workspace directory rename until
 ## Quickstart - Server
 - Go to "Run and Debug", select "Hot Reload Heavy Stack', then click the play button.
 
+  ![VS Code UI - how to run](docs/images/heavy-stack-how-to-run.png)
+
 
 ## Quickstart - Tests
 - Go to "Run and Debug", select "Pytest Daemon", then click the play button. This will start the daemon with debugging enabled.
