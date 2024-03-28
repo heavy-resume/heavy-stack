@@ -28,7 +28,7 @@ If using github codespaces, you may not see the workspace directory rename until
 ## Quickstart - Server
 - Go to "Run and Debug", select "Hot Reload Heavy Stack', then click the play button.
 
-![VS Code UI - how to run](docs/images/heavy-stack-how-to-run.png)
+  ![VS Code UI - how to run](docs/images/heavy-stack-how-to-run.png)
 
 
 ## Quickstart - Tests
