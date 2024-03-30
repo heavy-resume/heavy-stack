@@ -17,12 +17,13 @@ COPY ./custom_reactpy/reactpy .venv/lib/python3.11/site-packages/reactpy
 COPY ./custom_reactpy/dist .venv/lib/python3.11/site-packages/reactpy/_static/app/dist
 
 COPY static static
+COPY brython brython
 COPY heavy_stack heavy_stack
 
 ENV SANIC_REQUEST_MAX_SIZE 10000000
 ENV SANIC_REQUEST_TIMEOUT 10
 ENV SANIC_RESPONSE_TIMEOUT 10
-ENV PYTHONPATH .:static/brython
+ENV PYTHONPATH .:./brython
 
 EXPOSE 8000
 
