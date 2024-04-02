@@ -2,13 +2,13 @@
 The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork of the tech stack and syncing between Heavy Resume and this fork will be done periodically. This is intended to be treated like a starting template.
 
 
-## Features
+## Features That Work "Out of the Box" or With Minimal Work
 - Pre-made dev container, docker files
 - Top to Bottom Python (Sanic, custom ReactPy, Brython)
 - PostgreSQL, PG Vector, CockroachDB
 - SQL Model (SQLAlchemy + Pydantic)
 - Hot reloading, both server and tests
-- Action recording and load testing
+- User action recording and playback for load testing
 - Time tracking
 - Established patterns and examples
 
