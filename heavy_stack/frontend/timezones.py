@@ -31,7 +31,7 @@ def TimezoneProvider(*children):
             logger.warning(
                 f"Failed to create timezone {timezone_name} with offset {timezone_offset}. Defaulting to UTC."
             )
-            user_timezone = datetime.timezone(offset=0, name="UTC")
+            user_timezone = datetime.timezone(offset=datetime.timedelta(hours=0), name="UTC")
         set_user_timezone(user_timezone)
 
     heavy_use_effect(
