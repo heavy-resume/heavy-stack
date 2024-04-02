@@ -82,7 +82,7 @@ The project is structured as follows:
 ### Managing Database Connections
 - This shouldn't be needed for typical use cases. Repository classes should be the classes that access the
   database, and the `SQLRepositoryBase` class will grab the current database connection, which is stored
-  in a thread local. If you need a second connection (for example, to connect to the vector database),
+  in a context variable. If you need a second connection (for example, to connect to the vector database),
   you can look in `db_connection.py` to see how its done.
 - If you're getting an error about the `db_session` variable not being set, then it means you're probably attempting
   to do database access in the wrong place. Logic called inside an async function from `heavy_use_effect` or `heavy_event`
