@@ -106,7 +106,7 @@ class TestAClass:
 - `poetry add <package>` - Adds a package to the project.
 - `poetry add <package> --group=dev` - Adds a package to the project as a dev dependency.
 - `poetry install` - Install from the lock file.
-- `pip install --no-cache-dir <package>` - Install a package without caching. Sometimes needed.
+- `pip install --no-cache-dir <package>` - Install a package without caching. Sometimes needed if the pip cache, which is used by poetry, thinks a version doesn't exist.
 
 
 ## Environment Variables
