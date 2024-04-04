@@ -113,7 +113,7 @@ def main():
             textwrap.dedent(
                 f"""
                 from functools import cached_property
-                from typing import TypeVar
+                from typing import Generic, TypeVar
                 from {project_base_path}.backend.data.model_managers.base_managers import BaseManager
 
                 from {project_base_path}.backend.data.model_mungers.{munger_file_basename} import ModelMunger, {sql_munger_name}, {non_sql_munger_name}
@@ -123,7 +123,7 @@ def main():
 
                 T = TypeVar("T", bound={model_no_sql} | {model})
 
-                class {manager_name}(BaseManager):
+                class {manager_name}(BaseManager, Generic[T]):
                     possible_mungers = ({non_sql_munger_name}, {sql_munger_name})
 
                     def __init__(
