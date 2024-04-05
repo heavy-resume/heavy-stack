@@ -1,5 +1,5 @@
 # The Heavy Stack
-The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork of the tech stack and syncing between Heavy Resume and this fork will be done periodically. This is intended to be treated like a starting template.
+The Heavy Stack is the stack used by [Heavy Resume](https://heavyresume.com/). This is a point in time fork of the tech stack and syncing between Heavy Resume and this fork will be done periodically. This is intended to be treated like a starting template.
 
 
 ## Features That Work "Out of the Box"
