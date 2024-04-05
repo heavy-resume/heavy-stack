@@ -434,7 +434,7 @@ def wrap_reactpy_rendering() -> None:
 
     class TelemetryWrappedRenderComponent(OrigComponent):
         def render(self):
-            with get_heavy_tracer(__name__).start_as_current_span(
+            with trace.get_tracer_provider().get_tracer(__name__).start_as_current_span(
                 "reactpy-render", attributes={"component": self.type.__qualname__}
             ):
                 try:
