@@ -156,3 +156,14 @@ def CenteredColumn(*children: Component, style_classes: tuple[str] | None = None
 @component
 def Spacer() -> Component:
     return html.div({"class_name": "spacer"})
+
+
+@component
+def FlexRow(*children: Component, centered: bool = False, style_classes: tuple[str] | None = None) -> Component:
+    return html.div(
+        {
+            "style": "justify-content: center" if centered else "",
+            "class_name": " ".join((style_classes or tuple()) + ("flex-row",)),
+        },
+        *children,
+    )
