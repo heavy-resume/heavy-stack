@@ -79,6 +79,8 @@ def main():
 
 
                 class {model}(SQLModel, table=True):
+                    __tablename__ = "{table_name}"
+
                     id: {pk_type_name} = Field(default_factory=lambda: uuid4().hex, primary_key=True)
                 """
             ).lstrip()
