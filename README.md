@@ -13,6 +13,10 @@ The Heavy Stack is the stack used by Heavy Resume. This is a point in time fork 
 - Established patterns and examples
 
 
+## Status
+The Heavy Stack should be viewed as alpha software
+
+
 ## Renaming the project
 After checking out the repo, you should rename the project. Run `python rename_project.py` and follow the prompts.
 
@@ -321,3 +325,127 @@ It is important to note that whatever version of ReactPy is installed, IS NOT US
  - [MegaMock](https://github.com/JamesHutchison/megamock)
  - [PyTest Hot Reloading](https://github.com/JamesHutchison/pytest-hot-reloading)
  - [Heavy Resume Discord](https://discord.gg/f8AsGpUjKM)
+
+
+## Known Issues
+- Hot reloading
+  - The Jurigged library has some bugs that result in line numbers being off by one or more when using the debugger. Some of these were issues fixed on the test side but not the application side.
+- ReactPy
+  - Every component is server-side, which means things that shouldn't have latency, do. Client side components are in development by the maintainers.
+  - As mentioned above, this is using a custom version of ReactPy and correspondingly using monkey patching.
+
+## Telemetry and Structured Logging
+- OpenTelemetry is currently in Heavy Resume and will be backported at some point in time when it seems appropriate. In the mean time, below are how some things are done:
+- OpenTelemetry structured logging was successfully added by adding the class here and updating it as appropriate: https://github.com/open-telemetry/opentelemetry-python/blob/8f312c49a5c140c14d1829c66abfe4e859ad8fd7/opentelemetry-sdk/src/opentelemetry/sdk/_logs/_internal/__init__.py#L318
+
+Structured logging config:
+```python
+import orjson
+import structlog
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import (
+    OTLPLogExporter,
+)
+
+...
+
+    structlog.configure(
+        cache_logger_on_first_use=True,
+        wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+        processors=[
+            structlog.contextvars.merge_contextvars,
+            structlog.processors.add_log_level,
+            *(
+                [  # type: ignore
+                    structlog.processors.format_exc_info,
+                    structlog.processors.TimeStamper(fmt="iso", utc=True),
+                ]
+                if not USE_OPEN_TELEMETRY
+                else []
+            ),
+            *(
+                [
+                    OpenTelemetryExporter(
+                        os.environ.get("OTEL_SERVICE_NAME") or "",
+                        socket.gethostname(),
+                        OTLPLogExporter(),
+                    )
+                ]
+                if USE_OPEN_TELEMETRY
+                else []
+            ),
+            structlog.processors.JSONRenderer(serializer=orjson.dumps),
+        ],
+        logger_factory=structlog.BytesLoggerFactory(),
+    )
+```
+
+Known working OpenTelemetry versions:
+```yaml
+opentelemetry-distro = "0.43b0"
+opentelemetry-api = "1.22.0"
+opentelemetry-exporter-otlp = "1.22.0"
+opentelemetry-instrumentation = "0.43b0"
+opentelemetry-instrumentation-dbapi = "0.43b0"
+opentelemetry-instrumentation-logging = "0.43b0"
+opentelemetry-instrumentation-urllib = "0.43b0"
+opentelemetry-instrumentation-aiohttp-client = "0.43b0"
+opentelemetry-instrumentation-asgi = "0.43b0"
+opentelemetry-instrumentation-asyncpg = "0.43b0"
+opentelemetry-instrumentation-grpc = "0.43b0"
+opentelemetry-instrumentation-httpx = "0.43b0"
+opentelemetry-instrumentation-jinja2 = "0.43b0"
+opentelemetry-instrumentation-redis = "0.43b0"
+opentelemetry-instrumentation-requests = "0.43b0"
+opentelemetry-instrumentation-sqlalchemy = "0.43b0"
+opentelemetry-instrumentation-system-metrics = "0.43b0"
+```
+
+If this doesn't work, consider checking that there isn't opentelemetry libraries hanging around in your virtual environment from library installs.
+
+Enabling tracing:
+```python
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+...
+
+      resource = Resource(
+          attributes={
+              "environment": get_config().ENVIRONMENT,
+              "service.name": os.environ.get("OTEL_SERVICE_NAME") or "",
+          }
+      )
+      LoggingInstrumentor().instrument()
+      provider = TracerProvider(resource=resource)
+      processor = BatchSpanProcessor(OTLPSpanExporter())
+      provider.add_span_processor(processor)
+      trace.set_tracer_provider(provider)
+```
+
+Wrapping ReactPy rendering via monkey patch
+```python
+def wrap_reactpy_rendering() -> None:
+    from reactpy.core import component
+    from reactpy.core.component import Component as OrigComponent
+
+    class TelemetryWrappedRenderComponent(OrigComponent):
+        def render(self):
+            with get_heavy_tracer(__name__).start_as_current_span(
+                "reactpy-render", attributes={"component": self.type.__qualname__}
+            ):
+                try:
+                    return super().render()
+                except Exception:
+                    get_heavy_logger().exception("Error in reactpy-render")
+                    raise
+
+    component.Component = TelemetryWrappedRenderComponent  # type: ignore
+```
+
+Note that OpenTelemetry will add an `error` attribute to spans when there's an exception and the log levels will be completely independent of that. This can be confusing if you're searching for errors.
+
+Implementing OpenTelemetry may slow down the server. Note that the logger has async operations like `ainfo` that are higher cost but shouldn't block the thread.
