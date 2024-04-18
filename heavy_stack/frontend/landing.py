@@ -21,6 +21,7 @@ from heavy_stack.frontend.basic_components import (
 )
 from heavy_stack.frontend.brython_executors import BrythonExecutorContext
 from heavy_stack.frontend.input_components import Button, LineInput, NumberInput
+from heavy_stack.frontend.input_handling import get_input_by_id
 from heavy_stack.frontend.reactpy_util import heavy_event, heavy_use_effect
 from heavy_stack.frontend.types import Component
 from heavy_stack.shared_models.users import AnonymousUser, User
@@ -71,13 +72,13 @@ def LandingPage() -> Component:
                     html.form(
                         {
                             "on_submit": heavy_event(
-                                lambda e: set_input_value(e["target"]["elements"][0]["value"]),
+                                lambda e: set_input_value(get_input_by_id(e, "the-input")["value"]),
                                 stop_propagation=True,
                                 prevent_default=True,
                             )
                         },
                         html.div(
-                            LineInput(""),
+                            LineInput("", id="the-input"),
                         ),
                         Spacer(),
                         html.div(
