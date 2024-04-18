@@ -44,7 +44,7 @@ black = "^24.3.0"
 pytest = "^8.1.1"
 pytest-asyncio = "^0.21.1"
 py-spy = "^0.3.14"
-pytest-hot-reloading = "^0.1.0a15"
+pytest-hot-reloading = "^0.1.0a18"
 locust-plugins = { extras = ["websocket"], version = "^4.4.2" }
 
 [tool.pytest.ini_options]

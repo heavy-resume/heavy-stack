@@ -29,7 +29,7 @@ fi
 
 # installing reactpy if its not already cloned
 if [ ! -d "/workspaces/reactpy" ]; then
-  git clone -b hot-reloading https://github.com/JamesHutchison/reactpy.git /workspaces/reactpy
+  git clone -b add-jurigged-decorator-workaround https://github.com/JamesHutchison/reactpy.git /workspaces/reactpy
   rm -rf .venv/lib/python3.11/site-packages/reactpy
   ln -s /workspaces/reactpy/src/py/reactpy/reactpy .venv/lib/python3.11/site-packages/reactpy
   ln -s /workspaces/reactpy/src/js /workspaces/reactpy/src/py/reactpy/reactpy/_static
